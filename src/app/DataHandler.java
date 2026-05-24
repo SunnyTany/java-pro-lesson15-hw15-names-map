@@ -1,29 +1,42 @@
 package app;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 public class DataHandler {
 
-    Map<Integer, String> map = new DataRepository().getData();
+    private final DataRepository dataRepository;
 
-    // The method forms the display of a numbered sequence of names
+    public DataHandler(DataRepository dataRepository) {
+        this.dataRepository = dataRepository;
+    }
+
+    public String createUser(String name) {
+        User newUser = new User(name);
+        User savedUser = dataRepository.save(newUser);
+        return "\nUser created successfully: ID %d, Name: %s".formatted(savedUser.getId(), savedUser.getName());
+    }
+
     public String getAll() {
         StringBuilder sb = new StringBuilder();
-        AtomicInteger count = new AtomicInteger(0);
-        map.forEach((id, name) ->
-                sb.append(String.format("%d) %d, %s%n",
-                        count.incrementAndGet(), id, name)
-                ));
+        List<User> users = dataRepository.getAllUsers();
+
+        if (users.isEmpty()) {
+            return "\nALL NAMES:\nNo users registered yet.";
+        }
+
+        for (int i = 0; i < users.size(); i++) {
+            User user = users.get(i);
+            sb.append("%d) %d, %s%n".formatted(i + 1, user.getId(), user.getName()));
+        }
         return "\nALL NAMES:\n" + sb;
     }
 
-    // The method forms the display of the name behind the song id
-    public String getById(int id) {
-        if (map.containsKey(id)) {
-            return "\nNAME: id " + id + ", " + map.get(id);
-        } else {
-            return "\nNo data!";
+    public String getById(Long id) {
+        try {
+            User user = dataRepository.getUserById(id);
+            return "\nNAME: id %d, %s".formatted(user.getId(), user.getName());
+        } catch (UserNotFoundException e) {
+            return "\nError: %s".formatted(e.getMessage());
         }
     }
 }
