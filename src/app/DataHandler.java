@@ -31,12 +31,12 @@ public class DataHandler {
         return "\nALL NAMES:\n" + sb;
     }
 
+    // check for null here and throw an unchecked exception up top.
     public String getById(Long id) {
-        try {
-            User user = dataRepository.getUserById(id);
-            return "\nNAME: id %d, %s".formatted(user.getId(), user.getName());
-        } catch (UserNotFoundException e) {
-            return "\nError: %s".formatted(e.getMessage());
+        User user = dataRepository.getUserById(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
         }
+        return "\nNAME: id %d, %s".formatted(user.getId(), user.getName());
     }
 }

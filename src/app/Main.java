@@ -7,19 +7,27 @@ public class Main {
         DataHandler handler = new DataHandler(repository);
         UIOperator uiOperator = new UIOperator();
 
-        // 1. Adding users dynamically
-        uiOperator.getOutput(handler.createUser("Lucy"));
-        uiOperator.getOutput(handler.createUser("Alice"));
-        uiOperator.getOutput(handler.createUser("Bob"));
-        uiOperator.getOutput(handler.createUser("Tom"));
+        // 1. Dynamically adding all four users
+        uiOperator.getOutput(handler.createUser("Lucy"));   // Отримає ID 1
+        uiOperator.getOutput(handler.createUser("Alice"));  // Отримає ID 2
+        uiOperator.getOutput(handler.createUser("Bob"));    // Отримає ID 3
+        uiOperator.getOutput(handler.createUser("Tom"));    // Отримає ID 4
 
-        // 2. Display the entire list
+        // 2. Displaying a complete list of users
         uiOperator.getOutput(handler.getAll());
 
-        // 3. Looking for an existing user (for example, with automatic ID = 2)
-        uiOperator.getOutput(handler.getById(2L));
+        // 3. Looking for an existing user
+        try {
+            uiOperator.getOutput(handler.getById(4L));
+        } catch (UserNotFoundException e) {
+            uiOperator.getOutput("\nError: %s".formatted(e.getMessage()));
+        }
 
-        // 4. Checking error handling - user does not exist
-        uiOperator.getOutput(handler.getById(99L));
+        // 4. Trying to find a non-existent user (catch block will be triggered)
+        try {
+            uiOperator.getOutput(handler.getById(99L));
+        } catch (UserNotFoundException e) {
+            uiOperator.getOutput("\nError: %s".formatted(e.getMessage()));
+        }
     }
 }
